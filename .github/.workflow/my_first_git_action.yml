@@ -1,0 +1,13 @@
+name: Test1
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: myshell
+        run: |
+          echo "hello"
+    

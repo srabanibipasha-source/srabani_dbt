@@ -1,0 +1,33 @@
+name: Test 2
+on: 
+  pull_request:
+    branches:
+      - main
+      - srabani_dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the source branch raising the PR
+      - name: Checkout PR Branch
+        uses: actions/checkout@v4
+
+      # Step 2: Switch context explicitly to the dev branch
+      - name: Switch to Dev Branch Context
+        run: |
+          git fetch origin srabani_dev
+          git checkout srabani_dev
+          echo "Currently working within the context of branch: $(git branch --show-current)"
+
+      # Step 3: Authenticate to GCP using the traditional JSON Key
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.DEV_CONNECT_DBT}}
+
+      # Step 4: Verify the authentication succeeded
+      - name: Verify GCP Connection
+        run: |
+          gcloud auth list
+          gcloud config get-value project
+          echo "authentication successful"

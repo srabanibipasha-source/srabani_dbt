@@ -29,10 +29,6 @@ jobs:
 
       - name: Authenticate to Google Cloud PROD
         if: github.base_ref == 'main'
-        uses: google-github-actions/auth@v2
-        #with:
-          # If base_ref is srabani_dev, use dev. Otherwise, use prod.
-        #  credentials_json: ${{secrets.DEV_CONNECT_DBT}}
         run: |
           echo "prod SA is not available"
           exit 1

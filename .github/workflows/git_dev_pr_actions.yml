@@ -19,17 +19,19 @@ jobs:
           git checkout srabani_dev
           echo "Currently working within the context of branch: $(git branch --show-current)"
       
+      # Step 3: Fixed conditional logic mapping secrets securely to env first
       - name: Select Project & SA 
         id: detect 
+        env:
+          DEV_KEY: ${{ secrets.DEV_CONNECT_DBT }}
+          # PROD_KEY: ${{ secrets.PROD_CONNECT_DBT }}
         run: |
           if [ "${{ github.base_ref }}" = "srabani_dev" ]; then
-            # Securely mask the secret value in logs and write to output
             echo "SA_KEY<<EOF" >> $GITHUB_OUTPUT
-            echo "${{ secrets.DEV_CONNECT_DBT }}" >> $GITHUB_OUTPUT
+            echo "$DEV_KEY" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           else
-            # Optional: Fallback value if it is not srabani_dev
-            echo "prod connect" 
+            echo "prod connect"
           fi
 
       # Step 3: Authenticate to GCP using the traditional JSON Key

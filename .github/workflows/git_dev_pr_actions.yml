@@ -18,12 +18,27 @@ jobs:
           git fetch origin srabani_dev
           git checkout srabani_dev
           echo "Currently working within the context of branch: $(git branch --show-current)"
+      
+      - name: Select Project & SA 
+        id: detect 
+        run: |
+          if [ "${{ github.base_ref }}" = "srabani_dev" ]; then
+            # Securely mask the secret value in logs and write to output
+            echo "SA_KEY<<EOF" >> $GITHUB_OUTPUT
+            echo "${{ secrets.DEV_CONNECT_DBT }}" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            # Optional: Fallback value if it is not srabani_dev
+            echo "SA_KEY<<EOF" >> $GITHUB_OUTPUT
+            echo "${{ secrets.PROD_CONNECT_DBT }}" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
 
       # Step 3: Authenticate to GCP using the traditional JSON Key
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.DEV_CONNECT_DBT}}
+          credentials_json: ${{ steps.detect.outputs.SA_KEY}}
 
       # Step 4: Verify the authentication succeeded
       - name: Verify GCP Connection

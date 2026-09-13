@@ -18,28 +18,24 @@ jobs:
           git fetch origin srabani_dev
           git checkout srabani_dev
           echo "Currently working within the context of branch: $(git branch --show-current)"
-      
-      # Step 3: Fixed conditional logic mapping secrets securely to env first
-      - name: Select Project & SA 
-        id: detect 
-        env:
-          DEV_KEY: ${{ secrets.DEV_CONNECT_DBT }}
-          # PROD_KEY: ${{ secrets.PROD_CONNECT_DBT }}
-        run: |
-          if [ "${{ github.base_ref }}" = "srabani_dev" ]; then
-            echo "SA_KEY<<EOF" >> $GITHUB_OUTPUT
-            echo "$DEV_KEY" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "prod connect"
-          fi
 
       # Step 3: Authenticate to GCP using the traditional JSON Key
-      - name: Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud DEV
+        if: github.base_ref == 'srabani_dev'
         uses: google-github-actions/auth@v2
         with:
-          #credentials_json: ${{ steps.detect.outputs.SA_KEY}}
-          credentials_json: ${{ github.base_ref == 'srabani_dev' && secrets.DEV_CONNECT_DBT }}
+          # If base_ref is srabani_dev, use dev. Otherwise, use prod.
+          credentials_json: ${{secrets.DEV_CONNECT_DBT}}
+
+      - name: Authenticate to Google Cloud PROD
+        if: github.base_ref == 'main'
+        uses: google-github-actions/auth@v2
+        #with:
+          # If base_ref is srabani_dev, use dev. Otherwise, use prod.
+        #  credentials_json: ${{secrets.DEV_CONNECT_DBT}}
+        run: |
+          echo "prod SA is not available"
+          exit 1
 
       # Step 4: Verify the authentication succeeded
       - name: Verify GCP Connection

@@ -29,9 +29,7 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           else
             # Optional: Fallback value if it is not srabani_dev
-            echo "SA_KEY<<EOF" >> $GITHUB_OUTPUT
-            echo "${{ secrets.PROD_CONNECT_DBT }}" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "prod connect" 
           fi
 
       # Step 3: Authenticate to GCP using the traditional JSON Key
